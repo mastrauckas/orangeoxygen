@@ -11,6 +11,12 @@
         "Microsoft.NETCore.App": {
           "type": "platform",
           "version": "1.1.0"
+        },
+        "MetadataExtractor": {
+          "version": "2.0.0-rc1"
+        },
+        "Autofac": {
+          "version": "4.2.1"
         }
       },
       "imports": "dnxcore50"
