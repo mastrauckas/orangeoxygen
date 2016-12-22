@@ -81,7 +81,7 @@ namespace OrangeOxygen
 
         public override int GetHashCode()
         {
-            return m_hash.GetHashCode();
+            return FileHash.GetHashCode();
         }
 
         static public IEnumerable<DigitalFile> GetAllFiles(string path, string searchPattern, bool recursive)

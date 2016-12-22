@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OrangeOxygen.FileMoving;
-using OrangeOxygen.FileTypeCompares;
 
 namespace OrangeOxygen
 {
@@ -11,7 +10,7 @@ namespace OrangeOxygen
     {
         private ResourceManager() { }
 
-        public ResourceManager(string digitalFilesBaseDirectory, IEnumerable<IFileMove> fileMoving, IEnumerable<IFileTypeCompare> fileCompares)
+        public ResourceManager(string digitalFilesBaseDirectory, IEnumerable<IFileMove> fileMoving)
         {
             if (digitalFilesBaseDirectory == null)
                 throw new NullReferenceException();
@@ -22,12 +21,8 @@ namespace OrangeOxygen
             if (fileMoving == null)
                 throw new NullReferenceException("fileMoving");
 
-            if (fileCompares == null)
-                throw new NullReferenceException("fileCompares");
-
             m_digitalFilesBaseDirectory = digitalFilesBaseDirectory;
             m_fileMoving = fileMoving;
-            m_fileCompares = fileCompares;
         }
 
         public void ManageFiles()
@@ -40,8 +35,8 @@ namespace OrangeOxygen
         private IEnumerable<IEnumerable<DigitalFile>> GroupSameFiles(IEnumerable<DigitalFile> digitalFiles)
         {
             return digitalFiles.GroupBy(df => df.FileInformation.Extension.ToLower())
-                                            .Where(e => m_fileCompares.Any(fc => fc.CanHandleExention(e.First().FileInformation.Extension)))
-                                            .SelectMany(b => b.GroupBy(fi => fi.FileHash, (key, g) => g));
+                                            .Where(e => CanHandleExention(e.Key))
+                                            .SelectMany(b => b.GroupBy(fi => fi, (key, g) => g));
         }
 
         private void MoveFiles(IEnumerable<IEnumerable<DigitalFile>> digitalFiles)
@@ -54,9 +49,15 @@ namespace OrangeOxygen
             }
         }
 
+        private bool CanHandleExention(string exention)
+        {
+            return m_extentions.Any(e => e == exention);
+        }
+
         private string m_digitalFilesBaseDirectory = null;
 
         private IEnumerable<IFileMove> m_fileMoving = null;
-        private IEnumerable<IFileTypeCompare> m_fileCompares = null;
+
+        private static IEnumerable<string> m_extentions = new List<string>() { ".jpg" };
     }
 }

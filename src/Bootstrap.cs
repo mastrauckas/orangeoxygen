@@ -1,6 +1,5 @@
 using Autofac;
 using OrangeOxygen.FileMoving;
-using OrangeOxygen.FileTypeCompares;
 
 namespace OrangeOxygen
 {
@@ -24,11 +23,6 @@ namespace OrangeOxygen
                 .WithParameter("digitalFilesMoveDirectory", digitalFilesToeMoveBadDateDirectory)
                 .As<IFileMove>()
                 .SingleInstance();
-
-
-            //File Type Comparers.
-            builder.RegisterType<ImageFileTypeCompare>()
-                 .As<IFileTypeCompare>().SingleInstance();
 
             return builder.Build();
         }
