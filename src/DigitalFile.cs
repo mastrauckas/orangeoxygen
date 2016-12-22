@@ -38,27 +38,35 @@ namespace OrangeOxygen
             get
             {
                 lock (m_hashLock)
-                    if (m_hash == null)
-                        using (var md5 = MD5.Create())
-                            m_hash = BitConverter.ToString(md5.ComputeHash(File.ReadAllBytes(FileAndPath))).Replace("-", "");
+                    using (var md5 = MD5.Create())
+                        m_hash = BitConverter.ToString(md5.ComputeHash(File.ReadAllBytes(FileAndPath))).Replace("-", "");
 
                 return m_hash;
             }
         }
 
-        public DateTime FileDate
+        public DateTime? FileDate
         {
             get
             {
-                // Read all metadata from the image
-                var directories = ImageMetadataReader.ReadMetadata(FileAndPath);
+                lock (m_fileDateTimeLock)
+                {
+                    if (!m_hasCheckedFileDateTime)
+                    {
+                        // Read all metadata from the image
+                        var directories = ImageMetadataReader.ReadMetadata(FileAndPath);
 
-                // Find the so-called Exif "SubIFD" (which may be null)
-                var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                        // Find the so-called Exif "SubIFD" (which may be null)
+                        var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
-                // Read the DateTime tag value
-                var dateTime = subIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal);
-                return dateTime.HasValue ? dateTime.Value : FileInformation.CreationTime;
+                        // Read the DateTime tag value
+                        var dateTime = subIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal);
+                        m_fileDateTime = dateTime;
+                        m_hasCheckedFileDateTime = true;
+                    }
+                }
+
+                return m_fileDateTime;
             }
         }
 
@@ -67,7 +75,8 @@ namespace OrangeOxygen
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            return m_hash == ((DigitalFile)obj).FileHash;
+            var digitalFile = obj as DigitalFile;
+            return FileHash == digitalFile.FileHash && digitalFile.FileInformation.Length == FileInformation.Length;
         }
 
         public override int GetHashCode()
@@ -84,5 +93,11 @@ namespace OrangeOxygen
 
         private object m_hashLock = new object();
         private string m_hash = null;
+
+        private object m_fileDateTimeLock = new object();
+
+        private bool m_hasCheckedFileDateTime = false;
+
+        private DateTime? m_fileDateTime = null;
     }
 }

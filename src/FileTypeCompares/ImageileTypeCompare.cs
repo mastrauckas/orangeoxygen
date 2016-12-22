@@ -8,7 +8,7 @@ namespace OrangeOxygen.FileTypeCompares
     {
         public bool CompareFile(DigitalFile file1, DigitalFile file2)
         {
-            return file1.FileHash == file2.FileHash;
+            return file1 == file2;
         }
 
         public bool CanHandleExention(string extension)

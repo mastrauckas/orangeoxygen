@@ -1,23 +1,30 @@
 using Autofac;
-using OrangeOxygen.FileCopying;
+using OrangeOxygen.FileMoving;
 using OrangeOxygen.FileTypeCompares;
 
 namespace OrangeOxygen
 {
     static public class Bootstrap
     {
-        static public IContainer InitializeContainer(string baseDirectory)
+        static public IContainer InitializeContainer(string digitalFilesBaseDirectory, string digitalFilesMoveDirectory, string digitalFilesToeMoveBadDateDirectory)
         {
             var builder = new ContainerBuilder();
 
             builder.RegisterType<ResourceManager>()
-                  .As<IResourceManager>()
-                  .WithParameter("baseDirectory", baseDirectory)
-                  .SingleInstance();
+                .As<IResourceManager>()
+                .WithParameter("digitalFilesBaseDirectory", digitalFilesBaseDirectory)
+                .SingleInstance();
 
-            //File Copying
-            builder.RegisterType<DateFileCopy>()
-                  .As<IFileCopy>().SingleInstance();
+            builder.RegisterType<FileDateMove>()
+                .WithParameter("digitalFilesMoveDirectory", digitalFilesMoveDirectory)
+                .As<IFileMove>()
+                .SingleInstance();
+
+            builder.RegisterType<BadDateFileMove>()
+                .WithParameter("digitalFilesMoveDirectory", digitalFilesToeMoveBadDateDirectory)
+                .As<IFileMove>()
+                .SingleInstance();
+
 
             //File Type Comparers.
             builder.RegisterType<ImageFileTypeCompare>()

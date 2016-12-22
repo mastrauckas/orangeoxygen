@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OrangeOxygen.FileCopying;
+using OrangeOxygen.FileMoving;
 using OrangeOxygen.FileTypeCompares;
 
 namespace OrangeOxygen
@@ -11,29 +11,30 @@ namespace OrangeOxygen
     {
         private ResourceManager() { }
 
-        public ResourceManager(string baseDirectory, IEnumerable<IFileCopy> fileCopies, IEnumerable<IFileTypeCompare> fileCompares)
+        public ResourceManager(string digitalFilesBaseDirectory, IEnumerable<IFileMove> fileMoving, IEnumerable<IFileTypeCompare> fileCompares)
         {
-            if (baseDirectory == null)
+            if (digitalFilesBaseDirectory == null)
                 throw new NullReferenceException();
 
-            if (!Directory.Exists(baseDirectory))
-                throw new DirectoryNotFoundException($"{baseDirectory} doesn't exist.");
+            if (!Directory.Exists(digitalFilesBaseDirectory))
+                throw new DirectoryNotFoundException($"{digitalFilesBaseDirectory} doesn't exist.");
 
-            if (fileCopies == null)
-                throw new NullReferenceException("fileCopies");
+            if (fileMoving == null)
+                throw new NullReferenceException("fileMoving");
 
             if (fileCompares == null)
                 throw new NullReferenceException("fileCompares");
 
-            m_baseDirectory = baseDirectory;
-            m_fileCopies = fileCopies;
+            m_digitalFilesBaseDirectory = digitalFilesBaseDirectory;
+            m_fileMoving = fileMoving;
             m_fileCompares = fileCompares;
         }
 
         public void ManageFiles()
         {
-            var files = DigitalFile.GetAllFiles(m_baseDirectory, "*", true);
+            var files = DigitalFile.GetAllFiles(m_digitalFilesBaseDirectory, "*", true);
             var comparedFiles = GroupSameFiles(files);
+            MoveFiles(comparedFiles);
         }
 
         private IEnumerable<IEnumerable<DigitalFile>> GroupSameFiles(IEnumerable<DigitalFile> digitalFiles)
@@ -43,8 +44,19 @@ namespace OrangeOxygen
                                             .SelectMany(b => b.GroupBy(fi => fi.FileHash, (key, g) => g));
         }
 
-        private string m_baseDirectory = null;
-        private IEnumerable<IFileCopy> m_fileCopies = null;
+        private void MoveFiles(IEnumerable<IEnumerable<DigitalFile>> digitalFiles)
+        {
+            foreach (var df in digitalFiles)
+            {
+                //A collection of the same files.  Just get first for now.
+                var file = df.First();
+                m_fileMoving.FirstOrDefault(fm => fm.CanMoveFile(file))?.MoveFile(file);
+            }
+        }
+
+        private string m_digitalFilesBaseDirectory = null;
+
+        private IEnumerable<IFileMove> m_fileMoving = null;
         private IEnumerable<IFileTypeCompare> m_fileCompares = null;
     }
 }
