@@ -54,10 +54,10 @@ namespace OrangeOxygen
                     if (!m_hasCheckedFileDateTime)
                     {
                         // Read all metadata from the image
-                        var directories = ImageMetadataReader.ReadMetadata(FileAndPath);
+                        var metaData = ImageMetadataReader.ReadMetadata(FileAndPath);
 
                         // Find the so-called Exif "SubIFD" (which may be null)
-                        var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                        var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
                         // Read the DateTime tag value
                         var dateTime = subIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal);
