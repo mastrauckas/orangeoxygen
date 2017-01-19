@@ -35,7 +35,16 @@ namespace OrangeOxygen.FileMoving
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            File.Move(digitalFile.FileInformation.FullName, Path.Combine(dir, digitalFile.FileInformation.Name));
+            var source = digitalFile.FileInformation.FullName;
+            var desination = Path.Combine(dir, digitalFile.FileInformation.Name);
+
+            var fileMoveInformation = new FileMoveInformation()
+            {
+                SourceFileAndDirectory = source,
+                DesinationFileAndDirectory = desination
+            };
+
+            File.Move(source, desination);
         }
 
         override public string Message { get { return "Successful File Move(s)"; } }

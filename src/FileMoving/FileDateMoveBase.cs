@@ -22,7 +22,16 @@ namespace OrangeOxygen.FileMoving
             if (!Directory.Exists(DigitalFileMoveDirectory))
                 Directory.CreateDirectory(DigitalFileMoveDirectory);
 
-            File.Move(digitalFile.FileInformation.FullName, Path.Combine(DigitalFileMoveDirectory, digitalFile.FileInformation.Name));
+            var source = digitalFile.FileInformation.FullName;
+            var desination = Path.Combine(DigitalFileMoveDirectory, digitalFile.FileInformation.Name);
+
+            var fileMoveInformation = new FileMoveInformation()
+            {
+                SourceFileAndDirectory = source,
+                DesinationFileAndDirectory = desination
+            };
+
+            File.Move(source, desination);
         }
         virtual protected bool IsValidDateTime(DigitalFile digitalFile)
         {
