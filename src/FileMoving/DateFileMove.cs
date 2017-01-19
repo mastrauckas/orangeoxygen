@@ -16,6 +16,9 @@ namespace OrangeOxygen.FileMoving
 
         override public void MoveFile(DigitalFile digitalFile)
         {
+            if (!CanMoveFile(digitalFile))
+                throw new Exception("Can't move file.");
+
             if (!Directory.Exists(DigitalFileMoveDirectory))
                 Directory.CreateDirectory(DigitalFileMoveDirectory);
 

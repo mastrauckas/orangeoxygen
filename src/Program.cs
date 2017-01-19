@@ -7,9 +7,9 @@ namespace OrangeOxygen
     {
         public static void Main(string[] args)
         {
-            var container = Bootstrap.InitializeContainer("/home/melissa/TestPictures/Testing",
-                                                            "/home/melissa/TestPictures/MoveLocation/GoodPictures",
-                                                            "/home/melissa/TestPictures/MoveLocation/BadDate");
+            var container = Bootstrap.InitializeContainer("/Users/mastrauckas/projects/test_pictures/Testing/Pictures/",
+                                                            "//Users/mastrauckas/projects/test_pictures/Testing/Pictures/GoodPictures",
+                                                            "/Users/mastrauckas/projects/test_pictures/Testing/Pictures/BadDate");
 
             using (var scope = container.BeginLifetimeScope())
             {

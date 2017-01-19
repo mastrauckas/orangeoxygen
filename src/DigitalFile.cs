@@ -60,8 +60,14 @@ namespace OrangeOxygen
                         var subIfdDirectory = metaData.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
                         // Read the DateTime tag value
-                        var dateTime = subIfdDirectory?.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal);
-                        m_fileDateTime = dateTime;
+                        var hasTag = subIfdDirectory?.HasTagName(ExifDirectoryBase.TagDateTimeOriginal);
+                        if (hasTag.HasValue && hasTag.Value)
+                        {
+                            var dt = DateTime.MinValue;
+                            var hasDateTime = subIfdDirectory?.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out dt);
+                            if (hasDateTime.HasValue && hasDateTime.Value)
+                                m_fileDateTime = dt;
+                        }
                         m_hasCheckedFileDateTime = true;
                     }
                 }
