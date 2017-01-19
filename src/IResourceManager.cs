@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 
 namespace OrangeOxygen
 {
     public interface IResourceManager
     {
-        void ManageFiles();
+        IDictionary<string, int> ManageFiles();
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
+using static System.Console;
+using System.Linq;
 
 namespace OrangeOxygen
 {
@@ -11,11 +14,16 @@ namespace OrangeOxygen
                                                             "//Users/mastrauckas/projects/test_pictures/Testing/Pictures/GoodPictures",
                                                             "/Users/mastrauckas/projects/test_pictures/Testing/Pictures/BadDate");
 
+            IDictionary<string, int> messages = null;
             using (var scope = container.BeginLifetimeScope())
             {
                 var rm = scope.Resolve<IResourceManager>();
-                rm.ManageFiles();
+                messages = rm.ManageFiles();
             }
+
+            WriteLine($"Files Processed: {messages.Sum(m => m.Value)}");
+            foreach (var message in messages)
+                WriteLine($"{message.Key}: {message.Value}");
 
             //manager.ManageFiles(DigitalFile.GetAllFiles("/home/melissa/TestPictures/Testing", "*", true));
 

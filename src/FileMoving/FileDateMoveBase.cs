@@ -30,5 +30,7 @@ namespace OrangeOxygen.FileMoving
         }
 
         protected string DigitalFileMoveDirectory { get; }
+
+        abstract public string Message { get; }
     }
 }

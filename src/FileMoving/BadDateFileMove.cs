@@ -8,5 +8,7 @@ namespace OrangeOxygen.FileMoving
         {
             return !IsValidDateTime(digitalFile);
         }
+
+        override public string Message { get { return "Files With Bad Date(s)"; } }
     }
 }

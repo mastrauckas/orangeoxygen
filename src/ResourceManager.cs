@@ -25,11 +25,11 @@ namespace OrangeOxygen
             m_fileMoving = fileMoving;
         }
 
-        public void ManageFiles()
+        public IDictionary<string, int> ManageFiles()
         {
             var files = DigitalFile.GetAllFiles(m_digitalFilesBaseDirectory, "*", true);
             var comparedFiles = GroupSameFiles(files);
-            MoveFiles(comparedFiles);
+            return MoveFiles(comparedFiles);
         }
 
         private IEnumerable<IEnumerable<DigitalFile>> GroupSameFiles(IEnumerable<DigitalFile> digitalFiles)
@@ -39,14 +39,26 @@ namespace OrangeOxygen
                                             .SelectMany(b => b.GroupBy(fi => fi, (key, g) => g));
         }
 
-        private void MoveFiles(IEnumerable<IEnumerable<DigitalFile>> digitalFiles)
+        private IDictionary<string, int> MoveFiles(IEnumerable<IEnumerable<DigitalFile>> digitalFiles)
         {
+            var messages = new Dictionary<string, int>();
             foreach (var df in digitalFiles)
             {
                 //A collection of the same files.  Just get first for now.
                 var file = df.First();
-                m_fileMoving.FirstOrDefault(fm => fm.CanMoveFile(file))?.MoveFile(file);
+                var fileMover = m_fileMoving.FirstOrDefault(fm => fm.CanMoveFile(file));
+
+                if (fileMover != null)
+                {
+                    fileMover.MoveFile(file);
+                    if (messages.ContainsKey(fileMover.Message))
+                        messages[fileMover.Message]++;
+                    else
+                        messages.Add(fileMover.Message, 1);
+                }
             }
+
+            return messages;
         }
 
         private bool CanHandleExention(string exention)

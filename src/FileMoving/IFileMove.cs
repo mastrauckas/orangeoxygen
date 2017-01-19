@@ -4,5 +4,7 @@ namespace OrangeOxygen.FileMoving
     {
         bool CanMoveFile(DigitalFile digitalFile);
         void MoveFile(DigitalFile digitalFile);
+
+        string Message { get; }
     }
 }

@@ -37,5 +37,7 @@ namespace OrangeOxygen.FileMoving
 
             File.Move(digitalFile.FileInformation.FullName, Path.Combine(dir, digitalFile.FileInformation.Name));
         }
+
+        override public string Message { get { return "Successful File Move(s)"; } }
     }
 }
